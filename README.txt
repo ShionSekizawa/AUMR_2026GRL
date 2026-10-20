@@ -10,10 +10,8 @@ The analyses uses:
 
 Due to data size, these data are not included here.
 
-
 ## Tools
 NCAR Command Language (NCL; http://doi.org/10.5065/D6WD3XH5) version 6.5.0 has been used for the analyses and visualizations. 
-
 
 ##  File list
 ./d4PDF (includes files for making processed d4PDF data)
@@ -31,8 +29,9 @@ NCAR Command Language (NCL; http://doi.org/10.5065/D6WD3XH5) version 6.5.0 has b
   - make_sst_hist.ncl
   - make_vadv_area.ncl
   - make_figS2_tmpfile_d4pdf.ncl
+  - cov.ncl
 
-./CMIP6 (includes files for making processed CMIP6 data)
+./CMIP6 (includes files for making processed CMIP6 data, 26 models)
   (Text files of CMIP6 data file list)
   - FileList_hfls_historical.txt
   - FileList_hfls_ssp245.txt
@@ -64,12 +63,40 @@ NCAR Command Language (NCL; http://doi.org/10.5065/D6WD3XH5) version 6.5.0 has b
   - sst_pc.ncl
   - uv10.ncl
   - hfls.ncl
+  - cov.ncl
+
+./CMIP6/mulens (includes files for making processed CMIP6 data, 13 models x 5 members)
+  (Text files of CMIP6 data file list)
+  - FileList_hfls_historical_mulens.txt
+  - FileList_hfls_ssp585_mulens.txt
+  - FileList_pr_historical_mulens.txt
+  - FileList_pr_ssp585_mulens.txt
+  - FileList_sftlf_mulens.txt
+  - FileList_tas_historical_mulens.txt
+  - FileList_tas_ssp585_mulens.txt
+  - FileList_ts_historical_mulens.txt
+  - FileList_ts_ssp585_mulens.txt
+  - FileList_uas_historical_mulens.txt
+  - FileList_uas_ssp585_mulens.txt
+  - FileList_vas_historical_mulens.txt
+  - FileList_vas_ssp585_mulens.txt
+  - ModelMemList_mulens.txt
+  (NCL scripts)
+  - ausm_mulens.ncl
+  - sst_mulens.ncl
+  - u10_mulens.ncl
+  - gwlev_mulens.ncl
+  - sst_pc_mulens.ncl
+  - uv10_mulens.ncl
+  - hfls_mulens.ncl
+  - cov_mulens.ncl
 
 ./obs (includes files for making processed observation data)
   (NCL scripts)
   - make_ausm_rain.obs.ncl
   - sst_pc.obs.ncl
   - make_figS2_tmpfile_obs.ncl
+  - cov.obs.ncl
 
 ./figure: (includes files for creating figures)
   (NCL scripts)
@@ -81,7 +108,9 @@ NCAR Command Language (NCL; http://doi.org/10.5065/D6WD3XH5) version 6.5.0 has b
   - figS2.ncl
   - figS3.ncl
   - figS4.ncl
-
+  - figS5.ncl
+  - figS6_1.ncl
+  - figS6_2.ncl
 
 ## by Dr. Shion Sekizawa, Meteorological Research Institute, Japan Meteorological Agency (shion{at}mri-jma.go.jp)
-## Aug 27, 2026
+## Oct 20, 2026
