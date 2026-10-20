@@ -77,9 +77,9 @@ begin
   return(y)
 end
 
-;;; function for calculating dSST-induced correlation
+;;; function for calculating dSST-induced correlation (d4PDF)
 function dSST_cor(xin[12]:numeric,yin[12]:numeric)
-local x, y
+local i, x, y, cor, cor2, cor4, reg, reg2, reg4, id, cor_tmp, reg_tmp, stat, ret
 begin
   x = xin
   y = yin
@@ -87,7 +87,50 @@ begin
   x(6:) = dim_rmvmean(x(6:))
   y(:5) = dim_rmvmean(y(:5))
   y(6:) = dim_rmvmean(y(6:))
-  return(escorc(x,y))
+  cor = escorc(x,y)
+  reg = regCoef(x,y)
+  cor2 = escorc(x(:5),y(:5))
+  reg2 = regCoef(x(:5),y(:5))
+  cor4 = escorc(x(6:),y(6:))
+  reg4 = regCoef(x(6:),y(6:))
+  print("dSST_cor stats")
+  id = ispan(0,5,1)
+  cor_tmp = new(6,float)
+  reg_tmp = new(6,float)
+  stat = False
+  do i = 0, 5
+    cor_tmp(i) = escorc(x(ind(id.ne.i)),y(ind(id.ne.i)))
+    reg_tmp(i) = regCoef(x(ind(id.ne.i)),y(ind(id.ne.i)))
+  end do
+  print("   2K: "+cor2+" ("+min(cor_tmp)+" - "+max(cor_tmp)+")")
+  print("       "+reg2+" ("+min(reg_tmp)+" - "+max(reg_tmp)+")")
+  print("     (R2 = "+cor2*cor2+")")
+  if (min(cor_tmp)*max(cor_tmp).gt.0) then
+    stat = True
+  end if
+  do i = 0, 5
+    cor_tmp(i) = escorc(x(ind(id.ne.i)+6),y(ind(id.ne.i)+6))
+    reg_tmp(i) = regCoef(x(ind(id.ne.i)+6),y(ind(id.ne.i)+6))
+  end do
+  print("   4K: "+cor4+" ("+min(cor_tmp)+" - "+max(cor_tmp)+")")
+  print("       "+reg4+" ("+min(reg_tmp)+" - "+max(reg_tmp)+")")
+  print("     (R2 = "+cor4*cor4+")")
+  if (stat.and.min(cor_tmp)*max(cor_tmp).gt.0) then
+    stat = True
+  else
+    stat = False
+  end if
+  print("   2K/4K: "+cor)
+  print("          "+reg)
+  print("       (R2 = "+cor*cor+")")
+  print("   robustness test: "+stat)
+  ret = (/cor,reg/)
+  ret@cor2 = cor2
+  ret@cor4 = cor4
+  ret@reg2 = reg2
+  ret@reg4 = reg4
+  ret@stat = stat
+  return(ret)
 end
 
 begin
@@ -212,7 +255,7 @@ begin
   copy_VarCoords(sfc_map,vadv_p)
 
 ;;; open workstation
-  wks = gsn_open_wks("eps","fig2")
+  wks = gsn_open_wks("pdf","fig2")
 
 ;;; Panels (a-d)
   plot1 = new(4,graphic)
@@ -363,7 +406,8 @@ begin
     res3@xyMarkers := (/4,5,6,7,8,9,4,5,6,7,8,9/)
     res3@xyMarkerSizeF = 0.009
     printMinMax(VAR_area3[i](3:14,aid(i)),0)
-    res3@gsnRightString = "r~BF33~D~F~SST~N~ = "+sprintf("%3.2f",dSST_cor(var(3:14),VAR_area3[i](3:14,aid(i))))
+    temp = dSST_cor(var(3:14),VAR_area3[i](3:14,aid(i)))
+    res3@gsnRightString = "r~BF33~D~F~SST~N~ = "+sprintf("%3.2f",temp(0))+where(temp@stat,"~F18S~M","")
     plot3(i,0) = gsn_csm_xy(wks,diag(var(3:14)),diag(VAR_area3[i](3:14,aid(i))),res3)
     res3@xyMarkerColors := colors((/0,1,2/))
     res3@xyMarkers := (/16,16,16/)
@@ -419,7 +463,8 @@ begin
     dummy = diag(VAR_area4[i](3:14))
     res5@trYMinF = 100*y1(i)/VAR_area4[i](0)
     res5@trYMaxF = 100*y2(i)/VAR_area4[i](0)
-    res4@gsnRightString = "r~BF33~D~F~SST~N~ = "+sprintf("%3.2f",dSST_cor(var(3:14),VAR_area4[i](3:14)))
+    temp = dSST_cor(var(3:14),VAR_area4[i](3:14))
+    res4@gsnRightString = "r~BF33~D~F~SST~N~ = "+sprintf("%3.2f",temp(0))+where(temp@stat,"~F18S~M","")
     plot4(i,0) = gsn_csm_xy2(wks,diag(var(3:14)),diag(VAR_area4[i](3:14)),dummy,res4,res5)
     res4@xyMarkerColors := colors((/0,1,2/))
     res4@xyMarkers := (/16,16,16/)
